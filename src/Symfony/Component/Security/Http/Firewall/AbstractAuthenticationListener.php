@@ -143,8 +143,12 @@ abstract class AbstractAuthenticationListener implements ListenerInterface
                 throw new SessionUnavailableException('Your session has timed out, or you have disabled cookies.');
             }
 
-            if (null === $returnValue = $this->attemptAuthentication($request)) {
-                return;
+            if (!empty($this->tokenStorage->getToken()) && $this->tokenStorage->getToken()->isAuthenticated()) {
+                $returnValue = $this->tokenStorage->getToken();
+            } else {
+                if (null === $returnValue = $this->attemptAuthentication($request)) {
+                    return;
+                }
             }
 
             if ($returnValue instanceof TokenInterface) {
